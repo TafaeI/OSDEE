@@ -1,0 +1,9 @@
+[default]
+Barra de referência: 1
+Tensão na subestação(pu): 1,000
+Tensão base(kV): 12,660
+Potência base(kVA): 100000,000
+Tolerância de erro permitida: 1,000e-008
+Tensão mínima(pu): 0,930
+Tensão máxima(pu): 1,050
+Base de impedância: 1,603
