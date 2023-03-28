@@ -14,6 +14,7 @@ def _load_system(bus_number: int,
                     base)
     net = _branch_load(
         config['data_path'] + config['branch_file'] + bus_number, net)
+    return net
 
 
 def _config_load(file: str) -> SectionProxy:
@@ -33,10 +34,12 @@ def _branch_load(path_file: str, net: pp.pandapowerNet) -> pp.pandapowerNet:
         line = file.readline()
         while line:
             line = line.split()
-            print('from_bus', line[0], end=' || ')
-            print('to_bus', line[1], end=' || ')
-            print('resis', line[2], end=' || ')
-            print('reat', line[3])
+            from_bus = int(line[0])
+            to_bus = int(line[1])
+            resis = float(line[2].replace(',', '.'))
+            reat = float(line[3].replace(',', '.'))
+            pp.create_line_from_parameters(net=net, from_bus=from_bus, to_bus=to_bus, length_km=1,
+                                           r_ohm_per_km=resis, x_ohm_per_km=reat, c_nf_per_km=0, max_i_ka=1e6)
             line = file.readline()
     return net
 
