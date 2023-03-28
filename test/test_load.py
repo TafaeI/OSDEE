@@ -1,8 +1,10 @@
 import sys
 sys.path.append('.')
 from OSDEE.__src__ import load
+from OSDEE import OSDEE
 import pandapower as pp
 import unittest
+import inspect
 
 class TestLoadMethods(unittest.TestCase):
     def test_load(self):

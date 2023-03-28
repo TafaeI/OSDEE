@@ -9,7 +9,7 @@ def _load_system(bus_number: int,
     base = _base_load(config['data_path'] + config['base_file'] + bus_number)
     net = pp.create_empty_network(
         f_hz=60,
-        sn_mva=float(base['Potência base(kVA)'].replace(',', '.')) * 1e3)
+        sn_mva=float(base['Potência base(kVA)'].replace(',', '.')) / 1e3)
     net = _bus_load(config['data_path'] + config['bus_file'] + bus_number, net,
                     base)
     net = _branch_load(

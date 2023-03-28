@@ -17,3 +17,6 @@ autopep8 = "^2.0.2"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+tests = "run_tests:main"
