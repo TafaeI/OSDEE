@@ -38,8 +38,10 @@ def _branch_load(path_file: str, net: pp.pandapowerNet) -> pp.pandapowerNet:
             to_bus = int(line[1])
             resis = float(line[2].replace(',', '.'))
             reat = float(line[3].replace(',', '.'))
-            pp.create_line_from_parameters(net=net, from_bus=from_bus, to_bus=to_bus, length_km=1,
-                                           r_ohm_per_km=resis, x_ohm_per_km=reat, c_nf_per_km=0, max_i_ka=1e6)
+            line = pp.create_line_from_parameters(net=net, from_bus=from_bus, to_bus=to_bus, length_km=1,
+                                                  r_ohm_per_km=resis, x_ohm_per_km=reat, c_nf_per_km=0, max_i_ka=1e6)
+            pp.create_switch(net, from_bus, line, 'l')
+            pp.create_switch(net, to_bus, line, 'l')
             line = file.readline()
     return net
 
