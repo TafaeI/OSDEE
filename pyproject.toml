@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "osdee"
+version = "0.1.0"
+description = ""
+authors = ["Marujin <rafacmarodin@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pip-tools = "^6.12.3"
+pandapower = "^2.11.1"
+matplotlib = "^3.7.1"
+numba = "^0.56.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
