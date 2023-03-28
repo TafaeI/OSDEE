@@ -66,4 +66,6 @@ def _bus_load(path_file: str, net: pp.pandapowerNet,
                           min_vm_pu=min_vm)
             pp.create_load(net, n_bus, pKw / 1e3, (qiKvar - qcKvar) / 1e3)
             line = file.readline()
-        return net
+    ref_bus= int(base_config['Barra de referência'])
+    pp.create_ext_grid(net, ref_bus)
+    return net

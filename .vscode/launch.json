@@ -10,7 +10,9 @@
             "request": "launch",
             "program": "${file}",
             "console": "externalTerminal",
-            "justMyCode": true,
+            "cwd": "${workspaceFolder}",
+            "logToFile": true,
+            "justMyCode": true
         }
     ]
 }

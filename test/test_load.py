@@ -1,13 +1,11 @@
 import sys
-
 sys.path.append('.')
 from OSDEE.__src__ import load
+import pandapower as pp
+import unittest
 
-
-def show():
-    net = load._load_system(14)
-    print(net.line)
-
-
-if __name__ == '__main__':
-    show()
+class TestLoadMethods(unittest.TestCase):
+    def test_load(self):
+        for sys in (14, 33, 84, 136, 415):
+            net = load._load_system(sys)
+            pp.runpp(net)

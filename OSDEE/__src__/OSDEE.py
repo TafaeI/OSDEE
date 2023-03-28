@@ -3,10 +3,12 @@ import networkx as nx
 import pandas as pd
 
 class OSDEE:
-    def __init__(self, net: pp.pandapowerNet) -> None:
+    def __init__(self, net: pp.pandapowerNet | int) -> None:
         from .prim import _prim
         from .ms import _ms
         from .vns import _vns
+        from .load import _load_system
+        if not isinstance(net, pp.pandapowerNet): net = _load_system(net)
         self.net = net
         self._switches = OSDEE._get_all_switches(net)
         self._power_flow_method = pp.runpp
