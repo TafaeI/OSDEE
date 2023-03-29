@@ -56,6 +56,7 @@ def _bus_load(path_file: str, net: pp.pandapowerNet,
     tensao_base = base_config['Tensão base(kV)'].replace(',', '.')
     max_vm = base_config['Tensão máxima(pu)'].replace(',', '.')
     min_vm = base_config['Tensão mínima(pu)'].replace(',', '.')
+    ref_bus = int(base_config['Barra de referência'])
     with open(path_file, 'r') as file:
         line = file.readline()
         while line:
@@ -70,7 +71,8 @@ def _bus_load(path_file: str, net: pp.pandapowerNet,
                           max_vm_pu=max_vm,
                           min_vm_pu=min_vm)
             pp.create_load(net, n_bus, pKw / 1e3, (qiKvar - qcKvar) / 1e3)
+            if n_bus != ref_bus:
+                pp.create_gen(net, n_bus, 0, min_p_mw=-10, max_p_mw=10, min_q_mvar=-5, max_q_mvar=5, in_service=False)
             line = file.readline()
-    ref_bus = int(base_config['Barra de referência'])
     pp.create_ext_grid(net, ref_bus)
     return net

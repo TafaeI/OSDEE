@@ -103,3 +103,14 @@ class OSDEE:
     def losses(self, net: pp.pandapowerNet) -> float:
         self.run_power_flow(net)
         return -sum(net['res_bus']['p_mw'])
+
+    def _set_net_from_id(self, net: pp.pandapowerNet, id: tuple[int]) -> pp.pandapowerNet:
+        qtd_gd = id[0]
+        id = id[1:]
+        bus_gd = id[:qtd_gd]
+        id = id[qtd_gd:]
+        lines_in_service = id
+        net.gen.in_service = net.gen.bus.isin(bus_gd)
+        df = net['switch']
+        df['closed'] = df['element'].isin(lines_in_service)
+        return net
