@@ -8,7 +8,7 @@ class TestSetNetMethods(unittest.TestCase):
         to_compare = sys.ms.run(10)
         for id in to_compare:
             new_id = sys.get_network_id(sys._set_net_from_id(sys.net, id))
-            self.assertTrue(id == new_id)
+            self.assertEqual(id, new_id)
 
     def test_set_net_14(self):
         self._set_net(14)
