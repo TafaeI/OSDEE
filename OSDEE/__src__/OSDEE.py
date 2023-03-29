@@ -2,19 +2,23 @@ import pandapower as pp
 import networkx as nx
 import pandas as pd
 
+
 class OSDEE:
     def __init__(self, net: int | pp.pandapowerNet) -> None:
         from .prim import _prim
         from .ms import _ms
         from .vns import _vns
         from .load import load_system, get_parameters_config
-        if not isinstance(net, pp.pandapowerNet): net = load_system(net)
+        if not isinstance(net, pp.pandapowerNet):
+            net = load_system(net)
         self._param = get_parameters_config()
         self.net = net
         self._switches = OSDEE._get_all_switches(net)
         self._power_flow_method = pp.runpp
-        self._prim = _prim(self,int(self._param['initial_weight_prim']), self._param['attribute_weight_prim'])
-        self._ms = _ms(self, float(self._param['variacao_ms']), int(self._param['quantidade_csq'])//2)
+        self._prim = _prim(self, int(
+            self._param['initial_weight_prim']), self._param['attribute_weight_prim'])
+        self._ms = _ms(self, float(self._param['variacao_ms']), int(
+            self._param['quantidade_csq'])//2)
         self._vns = _vns(self)
         pass
 
@@ -44,11 +48,11 @@ class OSDEE:
         length = len(gen_buses)
         ret = (length,) + tuple(gen_buses)
         return ret
-    
+
     @staticmethod
     def _get_lines_disconnected(net: pp.pandapowerNet) -> tuple[int]:
         switch = net['switch']
-        open_switch = switch[switch['closed']==False]
+        open_switch = switch[switch['closed'] == False]
         lines = set(open_switch['element'].values)
         return tuple(sorted(lines))
 
@@ -65,10 +69,10 @@ class OSDEE:
         for line in net['switch']['element'].unique():
             u = net['line']['from_bus'][line]
             v = net['line']['to_bus'][line]
-            switches.add((u,v))
-            switches.add((v,u))
+            switches.add((u, v))
+            switches.add((v, u))
         return switches
-    
+
     @staticmethod
     def _get_substation_bus(net: pp.pandapowerNet) -> int:
         return net.ext_grid.bus[0]
@@ -77,7 +81,7 @@ class OSDEE:
     def _get_all_buses(net: pp.pandapowerNet) -> set[int]:
         ret = set(net.bus.index)
         return ret
-    
+
     @staticmethod
     def _set_opf_cost_function(net: pp.pandapowerNet) -> None:
         pp.create_poly_cost(net, 0, 'ext_grid', cp1_eur_per_mw=1)
@@ -88,11 +92,11 @@ class OSDEE:
         return sum(net.load.p_mw)
 
     def has_switch(self, edge: tuple[int, int]) -> bool:
-        return edge in self._switches    
+        return edge in self._switches
 
     def set_power_flow(self, func: callable) -> None:
         self._power_flow_method = func
-    
+
     def run_power_flow(self, net: pp.pandapowerNet) -> None:
         self._power_flow_method(net)
 

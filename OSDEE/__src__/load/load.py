@@ -1,7 +1,6 @@
 from configparser import ConfigParser, SectionProxy
 import pandapower as pp
 
-
 def load_system(bus_number: int,
                  config_file: str = 'config.ini') -> pp.pandapowerNet:
     config = _config_data_load(config_file)

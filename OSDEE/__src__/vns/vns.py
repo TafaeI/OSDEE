@@ -29,7 +29,7 @@ class _vns:
                 logging.info(f'Removed edge {edge[0]} - {edge[1]}')
                 try:
                     loss = self._base.losses(self._base.set_net_from_graph(net, graph))
-                except pp.OPFNotConverged:
+                except pp.LoadflowNotConverged:
                     logging.error('\t-> Não convergiu')
                     loss = float('inf')
                 graph.add_edge(*edge, **edge_data)
