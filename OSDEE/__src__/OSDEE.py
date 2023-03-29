@@ -3,17 +3,18 @@ import networkx as nx
 import pandas as pd
 
 class OSDEE:
-    def __init__(self, net: pp.pandapowerNet | int) -> None:
+    def __init__(self, net: int | pp.pandapowerNet) -> None:
         from .prim import _prim
         from .ms import _ms
         from .vns import _vns
-        from .load import _load_system
-        if not isinstance(net, pp.pandapowerNet): net = _load_system(net)
+        from .load import load_system, get_parameters_config
+        if not isinstance(net, pp.pandapowerNet): net = load_system(net)
+        self._param = get_parameters_config()
         self.net = net
         self._switches = OSDEE._get_all_switches(net)
         self._power_flow_method = pp.runpp
-        self._prim = _prim(self)
-        self._ms = _ms(self)
+        self._prim = _prim(self,int(self._param['initial_weight_prim']), self._param['attribute_weight_prim'])
+        self._ms = _ms(self, float(self._param['variacao_ms']), int(self._param['quantidade_csq'])//2)
         self._vns = _vns(self)
         pass
 

@@ -2,7 +2,7 @@ from configparser import ConfigParser, SectionProxy
 import pandapower as pp
 
 
-def _load_system(bus_number: int,
+def load_system(bus_number: int,
                  config_file: str = 'config.ini') -> pp.pandapowerNet:
     config = _config_data_load(config_file)
     data_path = config['data_path']
@@ -18,6 +18,10 @@ def _load_system(bus_number: int,
     net = _branch_load(data_path + branch_file + bus_number, net)
     return net
 
+def get_parameters_config(config_file: str = 'config.ini') -> SectionProxy:
+    config = ConfigParser()
+    config.read(config_file)
+    return config['parameters']
 
 def _config_data_load(file: str) -> SectionProxy:
     config = ConfigParser()

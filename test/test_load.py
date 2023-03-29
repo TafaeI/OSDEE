@@ -9,7 +9,7 @@ import inspect
 class TestLoadMethods(unittest.TestCase):
     @staticmethod
     def _load(bus_number):
-        net = load._load_system(bus_number)
+        net = load.load_system(bus_number)
         pp.runpp(net)
     def test_load_14(self):
         self._load(14)
