@@ -7,13 +7,20 @@ import inspect
 
 inspect.stack()[0].function
 class TestPrimMethods(unittest.TestCase):
-    def test_prim(self):
-        pf = lambda x: pp.runpp(x, algorithm='bfsw')
-        for i in (14, 33, 84, 136, 415):
-            sys = OSDEE(i)
-            mst = sys.prim.mst()
-            net = OSDEE.set_net_from_graph(sys.net, mst)
-            sys.losses(net)
+    @staticmethod
+    def _prim(bus_number):
+        sys = OSDEE(bus_number)
+        mst = sys.prim.mst(sys.prim._base_graph)
+        net = OSDEE.set_net_from_graph(sys.net, mst)
+        sys.losses(net)
 
-if __name__=='__main__':
-    TestPrimMethods().test_prim()
+    def test_prim_14(self):
+        self._prim(14)
+    def test_prim_33(self):
+        self._prim(33)
+    def test_prim_84(self):
+        self._prim(84)
+    def test_prim_136(self):
+        self._prim(136)
+    def test_prim_415(self):
+        self._prim(415)

@@ -7,7 +7,18 @@ import unittest
 import inspect
 
 class TestLoadMethods(unittest.TestCase):
-    def test_load(self):
-        for sys in (14, 33, 84, 136, 415):
-            net = load._load_system(sys)
-            pp.runpp(net)
+    @staticmethod
+    def _load(bus_number):
+        net = load._load_system(bus_number)
+        pp.runpp(net)
+    def test_load_14(self):
+        self._load(14)
+    def test_load_33(self):
+        self._load(33)
+    def test_load_84(self):
+        self._load(84)
+    def test_load_136(self):
+        self._load(136)
+    def test_load_415(self):
+        self._load(415)
+

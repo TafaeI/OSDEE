@@ -20,8 +20,8 @@ class _prim:
                 self._base_graph[de][para]['weight']=0
             i+=1
     
-    def mst(self) -> nx.MultiGraph:
-        return nx.algorithms.minimum_spanning_tree(self._base_graph, algorithm='prim')
+    def mst(self, graph: nx.MultiGraph) -> nx.MultiGraph:
+        return nx.algorithms.minimum_spanning_tree(graph, algorithm='prim')
 
     def _get_line_power_flow(self, grid: pp.pandapowerNet) -> pd.DataFrame:
         self._base.run_power_flow(grid)

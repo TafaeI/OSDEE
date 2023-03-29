@@ -4,23 +4,25 @@ import pandapower as pp
 
 def _load_system(bus_number: int,
                  config_file: str = 'config.ini') -> pp.pandapowerNet:
-    config = _config_load(config_file)
+    config = _config_data_load(config_file)
+    data_path = config['data_path']
+    base_file = config['base_file']
+    bus_file = config['bus_file']
+    branch_file = config['branch_file']
+
     bus_number = str(bus_number)
-    base = _base_load(config['data_path'] + config['base_file'] + bus_number)
-    net = pp.create_empty_network(
-        f_hz=60,
-        sn_mva=float(base['Potência base(kVA)'].replace(',', '.')) / 1e3)
-    net = _bus_load(config['data_path'] + config['bus_file'] + bus_number, net,
-                    base)
-    net = _branch_load(
-        config['data_path'] + config['branch_file'] + bus_number, net)
+    base = _base_load(data_path + base_file + bus_number)
+    base_mva = float(base['Potência base(kVA)'].replace(',', '.')) / 1e3
+    net = pp.create_empty_network(f_hz=60, sn_mva=base_mva)
+    net = _bus_load(data_path + bus_file + bus_number, net, base)
+    net = _branch_load(data_path + branch_file + bus_number, net)
     return net
 
 
-def _config_load(file: str) -> SectionProxy:
+def _config_data_load(file: str) -> SectionProxy:
     config = ConfigParser()
     config.read(file)
-    return config['default']
+    return config['data']
 
 
 def _base_load(path_file: str) -> SectionProxy:
@@ -66,6 +68,6 @@ def _bus_load(path_file: str, net: pp.pandapowerNet,
                           min_vm_pu=min_vm)
             pp.create_load(net, n_bus, pKw / 1e3, (qiKvar - qcKvar) / 1e3)
             line = file.readline()
-    ref_bus= int(base_config['Barra de referência'])
+    ref_bus = int(base_config['Barra de referência'])
     pp.create_ext_grid(net, ref_bus)
     return net

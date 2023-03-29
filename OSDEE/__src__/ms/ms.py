@@ -62,6 +62,7 @@ class _ms:
     def _get_max_min_diff(group_qtd: int, _to: dict[tuple[int], float], _from: dict[tuple[int], float]) -> dict[tuple[int], float]:
         for _ in range(group_qtd):
             net_id = _ms._get_max_diff(_to, _from)
+            if net_id == None: return _to
             _to[net_id] = _from.pop(net_id)
         return _to
                 
