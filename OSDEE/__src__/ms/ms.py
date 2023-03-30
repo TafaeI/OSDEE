@@ -3,6 +3,7 @@ import pandapower as pp
 import copy
 import random
 import sys
+from tqdm import trange
 from ... import OSDEE
 
 class _ms:
@@ -68,7 +69,7 @@ class _ms:
                 
 
     def run(self, iters: int) -> dict[tuple[int], float]:
-        for _ in range(iters):
+        for _ in trange(iters, desc='Multi-Start'):
             self._run_and_save()
         saved = copy.deepcopy(self.saved_networks)
         self.best_group = dict()

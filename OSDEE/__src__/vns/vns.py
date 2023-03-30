@@ -1,6 +1,7 @@
 import networkx as nx
 import pandapower as pp
 import logging
+from tqdm import tqdm
 from ... import OSDEE
 
 class _vns:
@@ -39,6 +40,8 @@ class _vns:
 
     def vns_in_lines(self, net: pp.pandapowerNet, current_graph: nx.MultiGraph) -> nx.MultiGraph:
         fim = False
+        progress_bar = tqdm(total=len(net.bus)-1,desc='VNS')
+        progress_num = 0
         while not fim:
             fim = True
             for edge in _vns.get_edges_to_add(self._base.prim._base_graph, current_graph):
@@ -46,8 +49,13 @@ class _vns:
                 logging.info(f"Added edge {edge['u_of_edge']} - {edge['v_of_edge']}")
                 best_to_remove = self.get_best_remove_edge(net, current_graph)
                 current_graph.remove_edge(*best_to_remove)
+                progress_bar.update()
+                progress_num +=1
                 if set(best_to_remove)!=set((edge['u_of_edge'],edge['v_of_edge'])):
                     fim = False
+                    progress_bar.update(1-progress_num)
+                    progress_bar.refresh()
+                    progress_num = 1
         return current_graph
 
     def set_best_bus_gd(self, net: pp.pandapowerNet, possible_buses: list[int]) -> int:

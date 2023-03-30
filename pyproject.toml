@@ -12,6 +12,7 @@ pandapower = "^2.11.1"
 matplotlib = "^3.7.1"
 numba = "^0.56.4"
 autopep8 = "^2.0.2"
+tqdm = "^4.65.0"
 
 
 [build-system]
