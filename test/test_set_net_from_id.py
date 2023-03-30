@@ -29,8 +29,4 @@ class TestSetNetMethods(unittest.TestCase):
 
 if __name__=='__main__':
     sys = OSDEE(14)
-    to_compare = sys.ms.run(100)
-    for id in to_compare:
-        new_id = sys.get_network_id(sys._set_net_from_id(sys.net, id))
-        print(id)
-        print(new_id, end='\n\n')
+    print(sys.net.gen)

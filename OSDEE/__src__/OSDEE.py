@@ -115,4 +115,9 @@ class OSDEE:
         df['closed'] = df['element'].isin(lines_disconnected)==False
         return net
 
-    def set_gd_in_buses
+    def set_gd_in_buses(self, net) -> pp.pandapowerNet:
+        pp.runpp(net)
+        for _ in range(self._qtd_gd):
+            min_pu_bus = net.res_bus.vm_pu.idxmin()
+            net.gen[net.gen.bus == min_pu_bus].in_service = True
+            pp.runopp(net, init='pf')
