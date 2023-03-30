@@ -1,14 +1,18 @@
 from OSDEE import OSDEE
 import unittest
+import networkx as nx
 from networkx.utils import graphs_equal
+
 
 
 class TestGetGraphMethods(unittest.TestCase):
     def _get_graph(self, bus_number):
         sys = OSDEE(bus_number)
         graph = sys.prim.mst(sys.prim._base_graph)
-        net = OSDEE.set_net_from_graph(net, graph)
+        net = OSDEE.set_net_from_graph(sys.net, graph)
         new_graph = OSDEE.get_graph_from_net(net)
+        for a_edge, b_edge in graph.edges():
+            graph[a_edge][b_edge]['weight'] = 1.
         self.assertTrue(graphs_equal(graph, new_graph))
 
     def test_get_graph_14(self):
