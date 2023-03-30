@@ -1,5 +1,6 @@
 import pandapower as pp
 import networkx as nx
+from pandapower import topology
 import pandas as pd
 
 
@@ -121,3 +122,14 @@ class OSDEE:
             min_pu_bus = net.res_bus.vm_pu.idxmin()
             net.gen[net.gen.bus == min_pu_bus].in_service = True
             pp.runopp(net, init='pf')
+
+    def run_vns_in_ms_systems(self, net, ms_group: set[tuple[int]]):
+        for ms_instance in ms_group:
+            net = self._set_net_from_id(net, ms_instance)
+            net = self.set_gd_in_buses(net)
+            self.vns.run(net, )
+    
+    @staticmethod
+    def get_graph_from_net(net: pp.pandapowerNet) -> nx.MultiGraph:
+        graph = topology.create_nxgraph(net, multi=False)
+        return graph
