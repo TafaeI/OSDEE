@@ -40,7 +40,8 @@ class _vns:
 
     def vns_in_lines(self, net: pp.pandapowerNet, current_graph: nx.MultiGraph) -> nx.MultiGraph:
         fim = False
-        progress_bar = tqdm(total=len(net.bus)-1,desc='VNS')
+        total = len(net.line)-(len(net.bus)-1)
+        progress_bar = tqdm(total=total,desc='VNS')
         progress_num = 0
         while not fim:
             fim = True
@@ -51,11 +52,15 @@ class _vns:
                 current_graph.remove_edge(*best_to_remove)
                 progress_bar.update()
                 progress_num +=1
+                if progress_num == total:
+                    progress_bar.close()
+                    return current_graph
                 if set(best_to_remove)!=set((edge['u_of_edge'],edge['v_of_edge'])):
                     fim = False
                     progress_bar.update(1-progress_num)
                     progress_bar.refresh()
                     progress_num = 1
+        progress_bar.close()
         return current_graph
 
     def set_best_bus_gd(self, net: pp.pandapowerNet, possible_buses: list[int]) -> int:
