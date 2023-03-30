@@ -20,7 +20,7 @@ class OSDEE:
         self._ms = _ms(self, float(self._param['variacao_ms']), int(
             self._param['quantidade_csq'])//2)
         self._vns = _vns(self)
-        self._qtd_gd = self._param['quantidade_gd']
+        self._qtd_gd = int(self._param['quantidade_gd'])
         pass
 
     @property

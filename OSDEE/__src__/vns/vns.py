@@ -30,7 +30,6 @@ class _vns:
                 try:
                     loss = self._base.losses(self._base.set_net_from_graph(net, graph))
                 except pp.LoadflowNotConverged:
-                    logging.error('\t-> Não convergiu')
                     loss = float('inf')
                 graph.add_edge(*edge, **edge_data)
                 if loss<loss_best:
