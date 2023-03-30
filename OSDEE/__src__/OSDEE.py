@@ -113,7 +113,7 @@ class OSDEE:
         lines_disconnected = id[qtd_gd:]
         net.gen.in_service = net.gen.bus.isin(bus_gd)
         df = net['switch']
-        df['closed'] = df['element'].isin(lines_disconnected)==False
+        df['closed'] = df['element'].isin(lines_disconnected) == False
         return net
 
     def set_gd_in_buses(self, net) -> pp.pandapowerNet:
@@ -122,13 +122,25 @@ class OSDEE:
             min_pu_bus = net.res_bus.vm_pu.idxmin()
             net.gen[net.gen.bus == min_pu_bus].in_service = True
             pp.runopp(net, init='pf')
+        return net
 
     def run_vns_in_ms_systems(self, net, ms_group: set[tuple[int]]):
+        saved = {
+            'MS': [],
+            'MS_loss': [],
+            'VNS': [],
+            'VNS_loss': []
+        }
         for ms_instance in ms_group:
             net = self._set_net_from_id(net, ms_instance)
             net = self.set_gd_in_buses(net)
-            self.vns.run(net, )
-    
+            net = self.vns.run(net, OSDEE.get_graph_from_net(net))
+            saved['MS'].append(ms_instance)
+            saved['MS_loss'].append(ms_group[ms_instance])
+            saved['VNS'].append(OSDEE.get_network_id(net))
+            saved['VNS_loss'].append(self.losses(net))
+        return pd.DataFrame(saved)
+
     @staticmethod
     def get_graph_from_net(net: pp.pandapowerNet) -> nx.MultiGraph:
         graph = topology.create_nxgraph(net, multi=False)
