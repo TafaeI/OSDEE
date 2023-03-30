@@ -20,6 +20,7 @@ class OSDEE:
         self._ms = _ms(self, float(self._param['variacao_ms']), int(
             self._param['quantidade_csq'])//2)
         self._vns = _vns(self)
+        self._qtd_gd = self._param['quantidade_gd']
         pass
 
     @property
@@ -43,7 +44,7 @@ class OSDEE:
 
     @staticmethod
     def _get_gen_buses(net: pp.pandapowerNet) -> tuple[int]:
-        gen_buses = [g[1].bus for g in net['gen'].iterrows()]
+        gen_buses = list(net.gen[net.gen.in_service == True].bus)
         gen_buses.sort()
         length = len(gen_buses)
         ret = (length,) + tuple(gen_buses)
@@ -108,9 +109,10 @@ class OSDEE:
         qtd_gd = id[0]
         id = id[1:]
         bus_gd = id[:qtd_gd]
-        id = id[qtd_gd:]
-        lines_in_service = id
+        lines_disconnected = id[qtd_gd:]
         net.gen.in_service = net.gen.bus.isin(bus_gd)
         df = net['switch']
-        df['closed'] = df['element'].isin(lines_in_service)
+        df['closed'] = df['element'].isin(lines_disconnected)==False
         return net
+
+    def set_gd_in_buses

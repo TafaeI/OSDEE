@@ -1,3 +1,5 @@
+import sys
+sys.path.append('.')
 from OSDEE import OSDEE
 import unittest
 
@@ -24,3 +26,11 @@ class TestSetNetMethods(unittest.TestCase):
 
     def test_set_net_415(self):
         self._set_net(415)
+
+if __name__=='__main__':
+    sys = OSDEE(14)
+    to_compare = sys.ms.run(100)
+    for id in to_compare:
+        new_id = sys.get_network_id(sys._set_net_from_id(sys.net, id))
+        print(id)
+        print(new_id, end='\n\n')
