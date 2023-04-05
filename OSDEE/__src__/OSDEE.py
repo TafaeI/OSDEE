@@ -2,6 +2,8 @@ import pandapower as pp
 import networkx as nx
 from pandapower import topology
 import pandas as pd
+import os
+from datetime import datetime
 
 
 class OSDEE:
@@ -18,7 +20,7 @@ class OSDEE:
         self._power_flow_method = pp.runpp
         self._prim = _prim(self, int(
             self._param['initial_weight_prim']), self._param['attribute_weight_prim'])
-        self._ms = _ms(self, float(self._param['variacao_ms']), int(
+        self._ms = _ms(self, float(self._param['variacao_ms'])/100, int(
             self._param['quantidade_csq'])//2)
         self._vns = _vns(self)
         self._qtd_gd = int(self._param['quantidade_gd'])
@@ -140,6 +142,29 @@ class OSDEE:
             saved['VNS'].append(OSDEE.get_network_id(net))
             saved['VNS_loss'].append(self.losses(net))
         return pd.DataFrame(saved)
+
+    def _get_results_path(self, net) -> str:
+        path = './resultados/'
+        path+= 'iwp' + self._param['initial_weight_prim'] + '_csq' + self._param['quantidade_csq'] + \
+               '_msv' + self._param['quantidade_csq'] + '_gdq' + self._param['quantidade_gd'] + '/'
+        path+= datetime.now().isoformat(timespec='seconds').replace(':','-') + '/'
+        path+= str(len(net.bus))
+        return path
+
+    def save_ms_group(self, net: pp.pandapowerNet, ms_group: set[tuple[int]]):
+        path = self._get_results_path(net) + '/ms'
+        os.makedirs(path, exist_ok=True)
+        current_dir = os.getcwd()
+        os.chdir(path)
+        for ms_instance in ms_group:
+            net = self._set_net_from_id(net, ms_instance)
+            losses = self.losses(net) * 1e6
+            losses = str(int(losses))
+            os.mkdir(losses)
+            net.res_bus.to_csv(losses + '/barras.csv', sep=';', decimal=',')
+            net.res_line.to_csv(losses + '/linhas.csv', sep=';', decimal=',')
+            net.res_gen.to_csv(losses + '/gd.csv', sep=';', decimal = ',')
+        os.chdir(current_dir)
 
     @staticmethod
     def get_graph_from_net(net: pp.pandapowerNet) -> nx.MultiGraph:
