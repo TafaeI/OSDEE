@@ -143,28 +143,36 @@ class OSDEE:
             saved['VNS_loss'].append(self.losses(net))
         return pd.DataFrame(saved)
 
-    def _get_results_path(self, net) -> str:
+    def _get_results_path(self, net: pp.pandapowerNet, minLoss: float) -> str:
         path = './resultados/'
-        path+= 'iwp' + self._param['initial_weight_prim'] + '_csq' + self._param['quantidade_csq'] + \
-               '_msv' + self._param['quantidade_csq'] + '_gdq' + self._param['quantidade_gd'] + '/'
-        path+= datetime.now().isoformat(timespec='seconds').replace(':','-') + '/'
-        path+= str(len(net.bus))
+        path += 'iwp' + self._param['initial_weight_prim'] + '_msv' + \
+                self._param['quantidade_csq'] + '_gdq' + \
+                self._param['quantidade_gd'] + '/'
+        path += str(len(net.bus)) + '/'
+        path += 'minLoss-' + str(int(minLoss*1e6)) + '/'
+        path += datetime.now().isoformat(timespec='seconds').replace(':', '-')
         return path
 
-    def save_ms_group(self, net: pp.pandapowerNet, ms_group: set[tuple[int]]):
-        path = self._get_results_path(net) + '/ms'
+    def save_results(self, net: pp.pandapowerNet, results: pd.DataFrame):
+        path = self._get_results_path(net, min(results['VNS_loss']))
         os.makedirs(path, exist_ok=True)
         current_dir = os.getcwd()
         os.chdir(path)
-        for ms_instance in ms_group:
-            net = self._set_net_from_id(net, ms_instance)
-            losses = self.losses(net) * 1e6
-            losses = str(int(losses))
-            os.mkdir(losses)
-            net.res_bus.to_csv(losses + '/barras.csv', sep=';', decimal=',')
-            net.res_line.to_csv(losses + '/linhas.csv', sep=';', decimal=',')
-            net.res_gen.to_csv(losses + '/gd.csv', sep=';', decimal = ',')
+        for index, row in results.iterrows():
+            path_to_save = str(int(row['VNS_loss']*1e6)) + '/' + str(index+1)
+            os.makedirs(path_to_save, exist_ok=True)
+            self._save_result_in_path(path_to_save + '/ms', net, row['MS'])
+            self._save_result_in_path(
+                path_to_save + '/vns', net, row['VNS'])
         os.chdir(current_dir)
+
+    def _save_result_in_path(self, path: str, net: pp.pandapowerNet, id: tuple[int]):
+        os.makedirs(path)
+        net = self._set_net_from_id(net, id)
+        self.run_power_flow(net)
+        net.res_bus.to_csv(path + '/barras.csv', sep=';', decimal=',')
+        net.res_line.to_csv(path + '/linhas.csv', sep=';', decimal=',')
+        net.res_gen.to_csv(path + '/gd.csv', sep=';', decimal=',')
 
     @staticmethod
     def get_graph_from_net(net: pp.pandapowerNet) -> nx.MultiGraph:
