@@ -4,6 +4,7 @@ from pandapower import topology
 import pandas as pd
 import os
 from datetime import datetime
+import pandapower as pp
 
 
 class OSDEE:
@@ -198,7 +199,7 @@ class OSDEE:
         os.chdir(current_dir)
 
     def _save_result_in_path(self, path: str, net: pp.pandapowerNet, id: tuple[int]):
-        os.makedirs(path)
+        os.makedirs(path, exist_ok=True)
         net = self._set_net_from_id(net, id)
         self.run_power_flow(net)
         net.res_bus.to_csv(path + "/barras.csv", sep=";", decimal=",")
