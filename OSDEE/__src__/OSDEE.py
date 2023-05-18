@@ -32,7 +32,7 @@ class OSDEE:
         )
         self._vns = _vns(self)
         self._qtd_gd = int(self._param["quantidade_gd"])
-        self._multi_vnd = bool(self._param["multi"])
+        self._multi_vnd = self._param.getboolean("multi")
         self._set_opf_cost_function(self.net)
         pass
 
@@ -101,7 +101,9 @@ class OSDEE:
     @staticmethod
     def _set_opf_cost_function(net: pp.pandapowerNet) -> None:
         pp.create_poly_cost(net, 0, "ext_grid", cp1_eur_per_mw=1)
-        pp.create_poly_costs(net, net.gen.index, "gen", cp1_eur_per_mw=1)
+        pp.create_poly_costs(
+            net, net.gen.index, "gen", cp1_eur_per_mw=1, cp1_eur_per_mvar=0.0001
+        )
 
     @staticmethod
     def _get_sum_load(net: pp.pandapowerNet) -> None:
