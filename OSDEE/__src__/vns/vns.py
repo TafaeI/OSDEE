@@ -31,7 +31,7 @@ class _vns:
                 logging.info(f"Removed edge {edge[0]} - {edge[1]}")
                 try:
                     loss = self._base.losses(self._base.set_net_from_graph(net, graph))
-                except pp.LoadflowNotConverged:
+                except (pp.LoadflowNotConverged, pp.OPFNotConverged):
                     loss = float("inf")
                 graph.add_edge(*edge, **edge_data)
                 if loss < loss_best:
@@ -87,8 +87,6 @@ class _vns:
 
     def vns_in_gd(self, net: pp.pandapowerNet) -> pp.pandapowerNet:
         fim = False
-        ex_power_flow = self._base._power_flow_method
-        self._base.set_power_flow(pp.runopp)
         while not fim:
             fim = True
             gen_buses = set(net.gen.bus[net.gen.in_service == True])
@@ -104,7 +102,6 @@ class _vns:
                 possible_buses.remove(best_bus)
                 if best_bus != bus:
                     fim = False
-        self._base.set_power_flow(ex_power_flow)
         return net
 
     def run(self, net: pp.pandapowerNet, graph: nx.MultiGraph) -> pp.pandapowerNet:

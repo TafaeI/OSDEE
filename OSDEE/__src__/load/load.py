@@ -84,6 +84,7 @@ def _bus_load(
                 pp.create_gen(
                     net,
                     n_bus,
+                    0,
                     min_p_mw=-10,
                     max_p_mw=10,
                     min_q_mvar=-5,

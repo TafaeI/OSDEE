@@ -150,6 +150,8 @@ class OSDEE:
     def run_vnd_in_ms_systems(self, net, ms_group: set[tuple[int]]):
         saved = {"MS": [], "MS_loss": [], "VNS": [], "VNS_loss": []}
         i = 0
+        if self._qtd_gd > 0:
+            self.set_power_flow(pp.runopp)
         for ms_instance in ms_group:
             net = self._set_net_from_id(net, ms_instance)
             net = self.set_gd_in_buses(net)
@@ -160,14 +162,10 @@ class OSDEE:
             saved["MS"].append(ms_instance)
             saved["MS_loss"].append(ms_group[ms_instance])
             saved["VNS"].append(OSDEE.get_network_id(net))
-            if self._multi_vnd:
-                self.set_power_flow(pp.runopp)
-                saved["VNS_loss"].append(self.losses(net))
-                self.set_power_flow(pp.runpp)
-            else:
-                saved["VNS_loss"].append(self.losses(net))
+            saved["VNS_loss"].append(self.losses(net))
             i += 1
             print(f"SISTEMA {i} FINALIZADO")
+        self.set_power_flow(pp.runpp)
         return pd.DataFrame(saved)
 
     def _get_results_path(self, net: pp.pandapowerNet, minLoss: float) -> str:
@@ -197,7 +195,11 @@ class OSDEE:
             path_to_save = str(int(row["VNS_loss"] * 1e6)) + "/" + str(index + 1)
             os.makedirs(path_to_save, exist_ok=True)
             self._save_result_in_path(path_to_save + "/ms", net, row["MS"])
+            if self._qtd_gd > 0:
+                self.set_power_flow(pp.runopp)
             self._save_result_in_path(path_to_save + "/vns", net, row["VNS"])
+            if self._qtd_gd > 0:
+                self.set_power_flow(pp.runpp)
         os.chdir(current_dir)
 
     def _save_result_in_path(self, path: str, net: pp.pandapowerNet, id: tuple[int]):
