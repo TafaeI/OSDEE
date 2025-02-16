@@ -2,6 +2,5 @@
 __pycache__/
 *.log
 .pytest_cache
-resultados/*
 resultados.rar
 .vscode/
